@@ -45,4 +45,4 @@ The images of the games are saved in the database as a Blob file. Because there 
 The parameters for setting up the email client are located in the application.properties file. This parameters should be changed according to the email server that will be used for sending mails.
 
 Also the parameters as sendto, sendbcc and the default email subject are in the same properies file.
-# Blexr
+
