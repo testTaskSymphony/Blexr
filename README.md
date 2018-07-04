@@ -2,6 +2,8 @@
 
 This is a Java [Spring Boot](http://projects.spring.io/spring-boot/) application for crawling a webpage.
 
+[HtmlUnit](http://htmlunit.sourceforge.net/) GUI-Less browser is used for crawling the webpage.
+
 ## Installation
 
 ### Requirements

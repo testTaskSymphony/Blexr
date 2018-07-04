@@ -547,6 +547,17 @@ public class Crawler {
 	    // set the maximum size of results per page (100)
 	    page = setMaximumLoadSize(page);
 	    
+	    // check if the images are loaded
+	    if (!checkIfImagesLoaded(page)) {
+		// if not refresh the page
+		try {
+		    page = (HtmlPage) page.refresh();
+		    waitForPageToLoad(page);
+		} catch (Exception e) {
+		    logger.error("page refresh", e);
+		}
+	    }
+
 	    // get all games with selected filters
 	    allGames = getGames(page);
 	    
@@ -602,9 +613,9 @@ public class Crawler {
 	if (select==null) {
 	    return null;
 	}
-	logger.info("SELECTED "+select.getOption(select.getSelectedIndex()).getTextContent());
 	
 	try {
+	    logger.info("SELECTED "+select.getOption(select.getSelectedIndex()).getTextContent());
 	    page = select.click();
 	    waitForPageToLoad(page);
 	    page.getWebClient().waitForBackgroundJavaScript(2000);
@@ -728,6 +739,17 @@ public class Crawler {
 		logger.info("TOTAL GAMES=" + totalContentSize);
 		// debug info only }
 		
+		// check if the images are loaded
+		if (!checkIfImagesLoaded(page)) {
+		    // if not refresh the page
+		    try {
+			page = (HtmlPage) page.refresh();
+			waitForPageToLoad(page);
+		    } catch (Exception e) {
+			logger.error("page refresh", e);
+		    }
+		}
+
 		// get the loaded games for a single selected reel
 		List<Game> allGames = getGames(page);
 
@@ -828,7 +850,17 @@ public class Crawler {
 		logger.info("TOTAL GAMES=" + totalContentSize);
 		// debug info only }
 		
-		
+		// check if the images are loaded
+		if (!checkIfImagesLoaded(page)) {
+		    // if not refresh the page
+		    try {
+			page = (HtmlPage) page.refresh();
+			waitForPageToLoad(page);
+		    } catch (Exception e) {
+			logger.error("page refresh", e);
+		    }
+		}
+
 		// get the loaded games for a single selected brand
 		List<Game> games = getGames(page);
 		
@@ -895,6 +927,17 @@ public class Crawler {
 		selectGameTypes.setSelectedIndex(i);
 		waitForPageToLoad(page);
 		
+		// check if the images are loaded
+		if (!checkIfImagesLoaded(page)) {
+		    // if not refresh the page
+		    try {
+			page = (HtmlPage) page.refresh();
+			waitForPageToLoad(page);
+		    } catch (Exception e) {
+			logger.error("page refresh", e);
+		    }
+		}
+
 		// get the games for the selected game type
 		List<Game> loadedGames = getGames(page);
 		
@@ -1006,6 +1049,17 @@ public class Crawler {
 		page = executeHrefAttribute(page, saveButton);
 		waitForPageToLoad(page);
 		
+		// check if the images are loaded
+		if (!checkIfImagesLoaded(page)) {
+		    // if not refresh the page
+		    try {
+			page = (HtmlPage) page.refresh();
+			waitForPageToLoad(page);
+		    } catch (Exception e) {
+			logger.error("page refresh", e);
+		    }
+		}
+
 		// get the loaded games
 		List<Game> games = getGames(page);
 		// add jurisdiction to game
