@@ -88,7 +88,7 @@ public class GameJurisdictionDaoImpl implements GameJurisdictionDao {
 	    return false;
 	}
 
-	String sqlCommand = "INSERT INTO "+TABLE_NAME+" ("+COL_GAME_ID+","+COL_JURISDICTION_ID+") VALUES (?, ?)";
+	String sqlCommand = "INSERT IGNORE INTO "+TABLE_NAME+" ("+COL_GAME_ID+","+COL_JURISDICTION_ID+") VALUES (?, ?)";
 	
 	try {
 	    jdbcTemplate.batchUpdate(sqlCommand, new BatchPreparedStatementSetter() {

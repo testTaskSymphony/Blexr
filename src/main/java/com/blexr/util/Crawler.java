@@ -491,6 +491,32 @@ public class Crawler {
 			    for (Game g : allGames) {
 				g.getPlatformList().add(platformName);
 			    }
+			    
+			    // go through the games and set the platform for each of them
+			    // if there is a new game that is not in the database - insert it
+			    for (Game g : allGames) {
+				if (g.getId() == null) {
+				    boolean found = false;
+				    for (Game gDb : gamesInDb) {
+					if (g.equals(gDb)) {
+					    g.setId(gDb.getId());
+					    found = true;
+					    break;
+					}
+				    }
+				    if (!found) {
+					// new game.. insert game in database
+					Integer gameId = gameDaoImpl.insert(g);
+					g.setId(gameId);
+				    }
+				}
+				GamePlatform gamePlatform = new GamePlatform();
+				gamePlatform.setGameId(g.getId());
+				for (String platform : g.getPlatformList()) {
+				    gamePlatform.setPlatformName(platform);
+				    gamePlatformDaoImpl.insert(gamePlatform);
+				}
+			    }
 			}
 		    }
 		} else {
@@ -505,31 +531,6 @@ public class Crawler {
 	    logger.error("getFilter",e);
 	}
 
-	// go through the games and set the platform for each of them
-	// if there is a new game that is not in the database - insert it
-	for (Game g : allGames) {
-	    if (g.getId()==null) {
-		boolean found = false;
-		for (Game gDb : gamesInDb) {
-		    if (g.equals(gDb)) {
-			g.setId(gDb.getId());
-			found = true;
-			break;
-		    }
-		}
-		if (!found) {
-		    // new game.. insert game in database
-		    Integer gameId = gameDaoImpl.insert(g);
-		    g.setId(gameId);
-		}
-	    }
-	    GamePlatform gamePlatform = new GamePlatform();
-	    gamePlatform.setGameId(g.getId());
-	    for (String platform : g.getPlatformList()) {
-		gamePlatform.setPlatformName(platform);
-		gamePlatformDaoImpl.insert(gamePlatform);
-	    }
-	}
     }
     
     /*

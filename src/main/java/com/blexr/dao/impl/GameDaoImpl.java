@@ -40,6 +40,7 @@ public class GameDaoImpl implements GameDao {
 	    Map<String, Object> parameters = new HashMap<String, Object>();
 	    parameters.put(COL_NAME, game.getName());
 	    parameters.put(COL_DETAILS, game.getDetails());
+	    parameters.put(COL_URL, game.getUrl());
 	    try {
 		parameters.put(COL_IMAGE_ID, game.getImage().getId());
 	    }
