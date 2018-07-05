@@ -792,7 +792,7 @@ public class Crawler {
 		// check if there are more radio buttons left 
 		if (i+1<reelListSize) {
 		    // click again on all to enable the rest radio buttons
-		    HtmlListItem liAll = (HtmlListItem) reelList.getElementsByTagName("li").get(0);
+		    HtmlListItem liAll = (HtmlListItem) reelList.getElementsByTagName("li").get(i);
 		    HtmlLabel labelAll = (HtmlLabel) liAll.getElementsByTagName("label").get(0);
 
 		    page = labelAll.click();
@@ -897,10 +897,21 @@ public class Crawler {
 		    logger.info("games list is null");
 		}
 
+		// we need to deselect the selected checkbox to enable the next one
+		// check if there are more checkboxes left 
+		if (i+1<brandListSize) {
+		    // click again on all to enable the rest radio buttons
+		    li = (HtmlListItem) brandList.getElementsByTagName("li").get(i);
+		    label = (HtmlLabel) li.getElementsByTagName("label").get(0);
+
+		    page = label.click();
+		    waitForPageToLoad(page);
+		}
+
 	    }
 	}
 	catch (Exception e) {
-	    logger.error("getReels", e);
+	    logger.error("getBrands", e);
 	}
     }
 

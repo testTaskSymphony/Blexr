@@ -28,7 +28,7 @@ public class GameBrandDaoImpl implements GameBrandDao {
 	if (gameBrand==null) {
 	    return false;
 	}
-	String sqlCommand = "INSERT INTO "+TABLE_NAME+" ("+COL_GAME_ID+", "+COL_BRAND_NAME+") VALUES (?,?) ";
+	String sqlCommand = "INSERT IGNORE INTO "+TABLE_NAME+" ("+COL_GAME_ID+", "+COL_BRAND_NAME+") VALUES (?,?) ";
 	try {
 	    int rows = jdbcTemplate.update(sqlCommand, new Object[] {gameBrand.getGameId(), gameBrand.getBrandName()});
 	    return rows >0;
