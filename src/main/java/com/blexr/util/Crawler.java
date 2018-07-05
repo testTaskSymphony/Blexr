@@ -6,7 +6,6 @@ import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.sql.rowset.serial.SerialBlob;
@@ -28,6 +27,7 @@ import com.blexr.dao.impl.GameReelDaoImpl;
 import com.blexr.dao.impl.GameTypeDaoImpl;
 import com.blexr.dao.impl.ImageDaoImpl;
 import com.blexr.dao.impl.JurisdictionDaoImpl;
+import com.blexr.dao.impl.UtilsDaoImpl;
 import com.blexr.entity.Game;
 import com.blexr.entity.GameBrand;
 import com.blexr.entity.GamePlatform;
@@ -117,6 +117,9 @@ public class Crawler {
     @Autowired
     GameTypeDaoImpl gameTypeDaoImpl;
     
+    @Autowired
+    UtilsDaoImpl utilsDaoImpl;
+    
     @Value("${crawler.url}")
     private String crawlerUrl;
     
@@ -135,7 +138,6 @@ public class Crawler {
     /*
      * Inital search for all games
      */
-    @PostConstruct
     public void startSearchForAllGames() {
 
 	crawl(false);
@@ -978,6 +980,26 @@ public class Crawler {
 	    
     }
     
+    private boolean checkIfJurisdictionsAreLoaded (HtmlPage page) {
+	try {
+	    DomElement jurisdictionTable = page.getElementById(TAG_JURISDICTION_TABLE);
+	    if (jurisdictionTable != null) {
+		DomNodeList<HtmlElement> tbody = jurisdictionTable.getElementsByTagName("tbody");
+		if (tbody != null && tbody.size() > 0) {
+		    DomNodeList<HtmlElement> rows = tbody.get(0).getElementsByTagName("tr");
+		    HtmlAnchor a = (HtmlAnchor) rows.get(0).getElementsByTagName("a").get(0);
+
+		    if ((a != null) && (a.getTextContent() != null) && (a.getTextContent().trim().length() != 0)) {
+			return true;
+		    }
+		}
+	    }
+	} catch (Exception e) {
+	    logger.error("", e);
+	}
+	return false;
+    }
+    
     /*
      * Get all the jurisdictions of the jurisdiction modal
      */
@@ -1009,8 +1031,19 @@ public class Crawler {
      * 5. deselect the jurisdiction and repeat the steps with the next jurisdiction
      * 
      */
-//    private void getJurisdictions(HtmlPage page, boolean searchNewGames) {
     private void getJurisdictions(HtmlPage page) {
+	
+	// check if the page is loaded including the jurisdictions
+	if (!checkIfJurisdictionsAreLoaded(page)) {
+	    try {
+		page = (HtmlPage)page.refresh();
+		waitForPageToLoad(page);
+	    }
+	    catch (Exception e) {
+		logger.error("", e);
+	    }
+	}
+	
 	List<Jurisdiction> jurisdictionList = getAllJurisdictionElements(page);
 	jurisdictionDaoImpl.insertBatch(jurisdictionList);
 	
@@ -1028,7 +1061,7 @@ public class Crawler {
 	    logger.info("LOADED GAMES=" + loadContentSize);
 	    logger.info("TOTAL GAMES=" + totalContentSize);
 	    // debug info only }
-		
+	    
 	    for (Jurisdiction j : jurisdictionList) {
 		// open jurisdiction modal
 		HtmlAnchor openJurisdictionButtton = (HtmlAnchor) page.getByXPath("//a[@class='switch active selected_jurisdictions_button']").get(0);
@@ -1063,17 +1096,25 @@ public class Crawler {
 
 		// get the loaded games
 		List<Game> games = getGames(page);
+		
 		// add jurisdiction to game
 		logger.info("***" + j.getName() + "***");
 		if (games != null) {
 		    for (Game game : games) {
+			boolean found = false;
 			for (int i=0; i<gamesInDb.size(); i++) {
 			    if (gamesInDb.get(i).equals(game)) {
+				found = true;
 				gamesInDb.get(i).getJurisdictionList().add(j.getName());
 				
 				gameJurisdictionDaoImpl.insert(gamesInDb.get(i).getId(), j.getName());
 				continue;
 			    }
+
+			}
+			if (!found) {
+			    int gameId = gameDaoImpl.insert(game);
+			    gameJurisdictionDaoImpl.insert(gameId, j.getName());
 			}
 		    }
 		} else {
@@ -1237,6 +1278,10 @@ public class Crawler {
 	    return false;
 	}
 	return imagesLoaded;
+    }
+    
+    public boolean checkIfInitialStart() {
+	return utilsDaoImpl.isInitialAppStart();
     }
     
 }

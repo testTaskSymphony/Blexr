@@ -45,7 +45,7 @@ public class GameDaoImpl implements GameDao {
 		parameters.put(COL_IMAGE_ID, game.getImage().getId());
 	    }
 	    catch (NullPointerException npe) {
-		
+		logger.info("insert", npe);
 	    }
 
 	    SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource());

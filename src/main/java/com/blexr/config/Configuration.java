@@ -21,6 +21,7 @@ import com.blexr.dao.impl.GameReelDaoImpl;
 import com.blexr.dao.impl.GameTypeDaoImpl;
 import com.blexr.dao.impl.ImageDaoImpl;
 import com.blexr.dao.impl.JurisdictionDaoImpl;
+import com.blexr.dao.impl.UtilsDaoImpl;
 import com.blexr.util.Crawler;
 
 @org.springframework.context.annotation.Configuration
@@ -110,5 +111,11 @@ public class Configuration {
     @Bean
     public GameTypeDaoImpl gameTypeDaoImpl() {
 	return new GameTypeDaoImpl();
-    }    
+    }
+    
+    @Bean
+    public UtilsDaoImpl utilsDaoImpl() {
+	return new UtilsDaoImpl();
+    }
+    
 }

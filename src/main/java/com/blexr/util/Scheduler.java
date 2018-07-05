@@ -18,7 +18,14 @@ public class Scheduler {
     public void newGamesSearchTask() {
 	logger.info("***newGamesSearchTask started***");
 	
-	myCrawler.startNewSearch();
+	if (myCrawler.checkIfInitialStart()) {
+	    // no data in database, the crawler starts for the first time
+	    myCrawler.startSearchForAllGames();
+	}
+	else {
+	    // the crawler will search only for new added games that are not already in the database
+	    myCrawler.startNewSearch();
+	}
     }
     
 }
